@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CineBook</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header>
+        <h1>CineBook</h1>
+        <div class="header-controls">
+            <input id="searchInput" placeholder="Search movies by title..." />
+            <button id="searchBtn">Search</button>
+            <button id="bookingStatusBtn" title="Booking Status">🔖</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+        <!-- Home / Movies Listing -->
+        <section id="homeSection">
+            <h2>Now Showing</h2>
+            <div id="moviesGrid" class="grid"></div>
+        </section>
+
+        <!-- Theatre Selection -->
+        <section id="theatreSection" style="display:none">
+            <button id="backToHome1" class="back-btn">◀ Back</button>
+            <div id="movieSummary" class="movie-summary"></div>
+            <h2 style="margin-top:14px">Choose Your Hall</h2>
+            <p class="subtle">Each hall offers a unique seating arrangement and experience</p>
+            <div id="theatresList" class="theatre-grid"></div>
+        </section>
+
+        <!-- Time Slots Selection -->
+        <section id="timeSlotsSection" style="display:none">
+            <button id="backToMovie" class="back-btn">◀ Back</button>
+            <div id="timeMovieSummary" class="movie-summary"></div>
+            <div id="timeSlotsContainer"></div>
+        </section>
+
+        <!-- Seat Selection -->
+        <section id="seatsSection" style="display:none">
+            <button id="backToTheatres" class="back-btn">◀ Back</button>
+            <h2 id="seatsHeader"></h2>
+            <div id="timeSlotInfo"></div>
+            <div id="seatsGrid" class="seats-grid"></div>
+            <div class="seat-legend">
+                <span class="legend available">🟢 Available</span>
+                <span class="legend booked">🔴 Booked</span>
+                <span class="legend selected">🟡 Selected</span>
+                <span class="legend priority">🔵 Best Seats</span>
+            </div>
+            <div class="seats-actions">
+                <div class="seat-controls">
+                        <label class="seat-controls-label">Best Seats</label>
+                        <div class="seat-count">
+                            <button id="decreaseSeats" class="seat-count-btn">−</button>
+                            <div id="seatCountDisplay" class="seat-count-num">1</div>
+                            <button id="increaseSeats" class="seat-count-btn">+</button>
+                        </div>
+                        <div id="seatError" class="seat-error" aria-live="polite"></div>
+                    </div>
+                <div class="confirm-wrap">
+                    <button id="confirmBooking">Confirm Booking</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Booking Confirmation Screen -->
+        <section id="confirmSection" style="display:none">
+            <h2>Booking Confirmed</h2>
+            <p id="confirmMsg"></p>
+            <button id="backToHome2">Done</button>
+        </section>
+
+                <!-- Booking Status / Cancel (modal card) -->
+                <section id="statusSection" style="display:none">
+                    <div class="status-card">
+                        <h2>Booking Status</h2>
+                        <div class="status-search-row">
+                            <input id="tokenInput" placeholder="example id: CBK12345" />
+                            <button id="viewBooking">View</button>
+                        </div>
+                        <!-- Active bookings shown first, cancellations follow (no tabs) -->
+                        <div id="tabActive" class="tab-content"></div>
+                        <div id="tabCancellations" class="tab-content"></div>
+                        <div class="status-footer"><button id="closeStatus" class="back-btn">Go Back</button></div>
+                    </div>
+                </section>
+        </div>
+    </main>
+  
+    <!-- Booking popup (created once) -->
+    <div id="bookingPopup" style="display:none"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
