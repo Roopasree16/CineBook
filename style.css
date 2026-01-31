@@ -32,9 +32,16 @@ header h1 { margin: 0; font-size: 28px; color: #e50914; font-weight:900; text-sh
 /* Make the home 'Now Showing' heading orange to match search accent */
 #homeSection h2 { color: #ff7a33; }
 
+/* Recommendations section spacing */
+#recommendedSection { margin-top: 26px; }
+
 /* Search button styling: orange accent */
 #searchBtn { background: #ff7a33; color: #081018; border-radius:6px; padding:6px 10px; border:none; font-weight:700; cursor:pointer; box-shadow: 0 8px 24px rgba(255,122,51,0.12); }
 #searchBtn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(255,122,51,0.14); }
+
+/* Reset button styling */
+#resetDataBtn { background:#0b1220; color:#e6eef8; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:6px 10px; font-weight:700; cursor:pointer }
+#resetDataBtn:hover { border-color:#ff7a33; }
 
 
 
