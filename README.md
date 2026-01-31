@@ -4,7 +4,7 @@ A movie ticket booking system built with vanilla JavaScript, HTML, and CSS. Brow
 
 ## Features
 
-- Browse 20 trending movies with ratings and genres
+- Browse trending movies with ratings and genres
 - Search movies in real-time
 - Select theaters and show timings
 - Interactive seat selection with visual availability
