@@ -13,6 +13,7 @@
         <div class="header-controls">
             <input id="searchInput" placeholder="Search movies by title..." />
             <button id="searchBtn">Search</button>
+            <button id="resetDataBtn" title="Clear bookings & refresh">Reset</button>
             <button id="bookingStatusBtn" title="Booking Status">🔖</button>
         </div>
     </header>
@@ -23,6 +24,10 @@
         <section id="homeSection">
             <h2>Now Showing</h2>
             <div id="moviesGrid" class="grid"></div>
+            <section id="recommendedSection" style="display:none">
+                <h2>Recommended For You</h2>
+                <div id="recommendedGrid" class="grid"></div>
+            </section>
         </section>
 
         <!-- Theatre Selection -->

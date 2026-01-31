@@ -44,7 +44,23 @@ const movies = [
   { title:'Top Gun: Maverick', poster:'https://upload.wikimedia.org/wikipedia/en/1/13/Top_Gun_Maverick_Poster.jpg', duration:'2h 11m', rating:'8.3', genre:'Action' },
   { title:'Spider-Man: No Way Home', poster:'https://upload.wikimedia.org/wikipedia/en/0/00/Spider-Man_No_Way_Home_poster.jpg', duration:'2h 28m', rating:'8.3', genre:'Action' },
   { title:'Avatar', poster:'https://upload.wikimedia.org/wikipedia/en/5/54/Avatar_The_Way_of_Water_poster.jpg', duration:'2h 42m', rating:'7.8', genre:'Adventure' },
-  { title:'The Conjuring', poster:'https://upload.wikimedia.org/wikipedia/en/8/8c/The_Conjuring_poster.jpg', duration:'1h 52m', rating:'7.6', genre:'Horror' }
+  { title:'The Conjuring', poster:'https://upload.wikimedia.org/wikipedia/en/8/8c/The_Conjuring_poster.jpg', duration:'1h 52m', rating:'7.6', genre:'Horror' },
+  { title:'The Lord of the Rings: The Fellowship of the Ring', poster:'https://upload.wikimedia.org/wikipedia/en/f/fb/Lord_Rings_Fellowship_Ring.jpg', duration:'2h 58m', rating:'8.8', genre:'Adventure' },
+  { title:'The Lord of the Rings: The Two Towers', poster:'https://upload.wikimedia.org/wikipedia/en/a/a1/Lord_Rings_Two_Towers.jpg', duration:'2h 59m', rating:'8.7', genre:'Adventure' },
+  { title:'The Lord of the Rings: The Return of the King', poster:'https://upload.wikimedia.org/wikipedia/en/4/48/Lord_Rings_Return_King.jpg', duration:'3h 21m', rating:'9.0', genre:'Adventure' },
+  { title:'Fight Club', poster:'https://upload.wikimedia.org/wikipedia/en/f/fc/Fight_Club_poster.jpg', duration:'2h 19m', rating:'8.8', genre:'Drama' },
+  { title:'The Green Mile', poster:'https://upload.wikimedia.org/wikipedia/en/e/e2/The_Green_Mile_%28movie_poster%29.jpg', duration:'3h 9m', rating:'8.6', genre:'Drama' },
+  { title:'Se7en', poster:'https://upload.wikimedia.org/wikipedia/en/6/68/Seven_%28movie%29_poster.jpg', duration:'2h 7m', rating:'8.6', genre:'Crime' },
+  { title:'The Departed', poster:'https://upload.wikimedia.org/wikipedia/en/5/50/Departed234.jpg', duration:'2h 31m', rating:'8.5', genre:'Crime' },
+  { title:'John Wick', poster:'https://upload.wikimedia.org/wikipedia/en/9/98/John_Wick_TeaserPoster.jpg', duration:'1h 41m', rating:'7.4', genre:'Action' },
+  { title:'Mad Max: Fury Road', poster:'https://upload.wikimedia.org/wikipedia/en/6/6e/Mad_Max_Fury_Road.jpg', duration:'2h 0m', rating:'8.1', genre:'Action' },
+  { title:'Blade Runner 2049', poster:'https://upload.wikimedia.org/wikipedia/en/9/9f/Blade_Runner_%281982_poster%29.png', duration:'2h 44m', rating:'8.0', genre:'Sci‑Fi' },
+  { title:'The Martian', poster:'https://upload.wikimedia.org/wikipedia/en/c/cd/The_Martian_film_poster.jpg', duration:'2h 24m', rating:'8.0', genre:'Sci‑Fi' },
+  { title:'A Quiet Place', poster:'https://upload.wikimedia.org/wikipedia/en/a/a0/A_Quiet_Place_film_poster.png', duration:'1h 30m', rating:'7.5', genre:'Horror' },
+  { title:'Get Out', poster:'https://upload.wikimedia.org/wikipedia/en/a/a3/Get_Out_poster.png', duration:'1h 44m', rating:'7.7', genre:'Horror' },
+  { title:'Whiplash', poster:'https://upload.wikimedia.org/wikipedia/en/0/01/Whiplash_poster.jpg', duration:'1h 46m', rating:'8.5', genre:'Drama' },
+  { title:'The Prestige', poster:'https://upload.wikimedia.org/wikipedia/en/d/d2/Prestige_poster.jpg', duration:'2h 10m', rating:'8.5', genre:'Thriller' },
+  { title:'Gone Girl', poster:'https://upload.wikimedia.org/wikipedia/en/0/05/Gone_Girl_Poster.jpg', duration:'2h 29m', rating:'8.1', genre:'Thriller' }
 ];
 
 
@@ -131,6 +147,9 @@ const viewBookingBtn = document.getElementById('viewBooking');
 const tabActive = document.getElementById('tabActive');
 const tabCancellations = document.getElementById('tabCancellations');
 const bookingPopup = document.getElementById('bookingPopup');
+const resetDataBtn = document.getElementById('resetDataBtn');
+const recommendedSection = document.getElementById('recommendedSection');
+const recommendedGrid = document.getElementById('recommendedGrid');
 
 /* ---------- App state ---------- */
 let bst = new MovieBST();
@@ -148,19 +167,24 @@ function debounce(fn,wait=250){ let t; return (...a)=>{ clearTimeout(t); t=setTi
 /* ---------- Rendering Movies & Search ---------- */
 function loadMoviesIntoBST(){ for(const m of movies) bst.insert(m.title,m) }
 
-function renderMovies(list){ moviesGrid.innerHTML=''; for(const m of list){ const card=document.createElement('div'); card.className='movie-card'; card.innerHTML=`<div class="rating-badge">⭐ ${m.rating}</div><div class="genre-tag">${m.genre}</div><img class="poster" src="${m.poster}" alt="${m.title}" /><div class="movie-info"><h3>${m.title}</h3><div class="meta">${m.duration}</div><div style="margin-top:6px"><button data-title="${m.title}">Book Now</button></div></div>`; moviesGrid.appendChild(card); card.querySelector('button').onclick = ()=>openTheatres(m) } }
-
 // ensure poster fallback if some images fail to load
 // safeImage: tries the main src, then an alternate (data-alt), then falls back to inline SVG
 function safeImage(img){ if(!img) return; img.onerror = null; img.onerror = ()=>{ try{ if(img.dataset && img.dataset.alt && img.src!==img.dataset.alt){ img.onerror = null; img.src = img.dataset.alt; return } }catch(e){} img.onerror=null; img.src = FALLBACK_IMG } }
 
-// enhance renderMovies to attach onerror fallback
-function renderMovies(list){ moviesGrid.innerHTML=''; for(const m of list){ const card=document.createElement('div'); card.className='movie-card';
+function createMovieCard(m){
+  const card = document.createElement('div');
+  card.className = 'movie-card';
   // prepare a small alternate poster (picsum seeded) to try if main poster fails
   const alt = `https://picsum.photos/seed/${encodeURIComponent(m.title)}/300/450`;
   card.innerHTML = `<div class="rating-badge">⭐ ${m.rating}</div><div class="genre-tag">${m.genre}</div><img class="poster" src="${m.poster}" data-alt="${alt}" alt="${m.title}" /><div class="movie-info"><h3>${m.title}</h3><div class="meta">${m.duration}</div><div style="margin-top:6px"><button data-title="${m.title}">Book Now</button></div></div>`;
-    const img = card.querySelector('img'); safeImage(img); moviesGrid.appendChild(card); card.querySelector('button').onclick = ()=>openTheatres(m)
-  } }
+  const img = card.querySelector('img');
+  safeImage(img);
+  card.querySelector('button').onclick = ()=>openTheatres(m);
+  return card;
+}
+
+// enhance renderMovies to attach onerror fallback
+function renderMovies(list){ moviesGrid.innerHTML=''; for(const m of list){ moviesGrid.appendChild(createMovieCard(m)) } }
 
 // compute numeric capacity for theatres (supports sections)
 function computeCapacity(t){ if(!t) return 0; if(Array.isArray(t.sections)) return t.sections.reduce((s,sec)=> s + ((sec.rows||0)*(sec.cols||0)), 0); return (t.rows||0) * (t.cols||0); }
@@ -180,6 +204,124 @@ mo.observe(document.getElementById('theatresList'), { childList:true, subtree:tr
 const doSearch = debounce(()=>{ const q=searchInput.value.trim(); if(!q) { renderMovies(bst.inorder()); return } const res=bst.searchMatches(q); renderMovies(res) },200);
 searchInput.addEventListener('input', doSearch);
 searchBtn.onclick = ()=>{ const q=searchInput.value.trim(); if(!q) renderMovies(bst.inorder()); else renderMovies(bst.searchMatches(q)); }
+
+/* ---------- Recommendations (Hash Map + Max Heap) ---------- */
+function getRecentBookings(limit=5){
+  const list = Object.values(bookings || {});
+  return list
+    .slice()
+    .sort((a,b)=> new Date(b.timestamp||0) - new Date(a.timestamp||0))
+    .slice(0, limit);
+}
+
+function buildGenrePreferenceMap(){
+  // Hash Map usage: count how many times each genre was booked
+  const genreCountMap = new Map();
+  const recentBookings = getRecentBookings(5);
+  for(const b of recentBookings){
+    const mv = movies.find(x=>x.title===b.movie);
+    if(!mv || !mv.genre) continue;
+    const key = mv.genre;
+    genreCountMap.set(key, (genreCountMap.get(key) || 0) + 1);
+  }
+  return genreCountMap;
+}
+
+function getPreferredGenres(genreCountMap){
+  let max = 0; const preferred = [];
+  for(const [g,count] of genreCountMap.entries()){ if(count>max){ max=count; preferred.length=0; preferred.push(g) } else if(count===max && count>0){ preferred.push(g) } }
+  return preferred;
+}
+
+function buildRecommendations(){
+  const genreCountMap = buildGenrePreferenceMap();
+  if(!genreCountMap || genreCountMap.size===0) return [];
+
+  const bookedTitles = new Set([
+    ...Object.values(bookings || {}).map(b=>b.movie)
+  ]);
+
+  // Determine most recent genres in order (unique)
+  const recentGenres = [];
+  for(const b of getRecentBookings(5)){
+    const mv = movies.find(x=>x.title===b.movie);
+    if(!mv || !mv.genre) continue;
+    if(!recentGenres.includes(mv.genre)) recentGenres.push(mv.genre);
+  }
+
+  // Build per-genre candidate lists (sorted by score formula desc)
+  const genreBuckets = new Map();
+  for(const m of movies){
+    if(bookedTitles.has(m.title)) continue;
+    if(!genreBuckets.has(m.genre)) genreBuckets.set(m.genre, []);
+    genreBuckets.get(m.genre).push(m);
+  }
+  
+  // Score formula: rating * 10 + genre_frequency * 100
+  for(const [g,list] of genreBuckets.entries()){
+    list.sort((a,b)=> {
+      const scoreA = (parseFloat(a.rating||'0') * 10) + ((genreCountMap.get(a.genre) || 0) * 100);
+      const scoreB = (parseFloat(b.rating||'0') * 10) + ((genreCountMap.get(b.genre) || 0) * 100);
+      return scoreB - scoreA;
+    });
+    genreBuckets.set(g,list);
+  }
+
+  // Slot allocation: most recent genre gets 3, next gets 2 (strict 3+2 ratio when 2+ genres booked)
+  const slotsByGenre = new Map();
+  if(recentGenres[0]) slotsByGenre.set(recentGenres[0], 3);
+  if(recentGenres[1]) slotsByGenre.set(recentGenres[1], 2);
+
+  const results = [];
+  const picked = new Set();
+
+  // Fulfill 3+2 ratio: Fill primary genre slot (3) first, then secondary (2)
+  for(const [genre, count] of slotsByGenre.entries()){
+    const list = genreBuckets.get(genre) || [];
+    let filledCount = 0;
+    for(const m of list){
+      if(filledCount >= count) break;
+      if(picked.has(m.title)) continue;
+      results.push(m);
+      picked.add(m.title);
+      filledCount++;
+    }
+  }
+
+  // Fill remaining slots (if < 5) using score formula from all other genres
+  if(results.length < 5){
+    const allMovies = [];
+    for(const m of movies){
+      if(bookedTitles.has(m.title) || picked.has(m.title)) continue;
+      allMovies.push(m);
+    }
+    
+    // Sort all remaining movies by score formula
+    allMovies.sort((a,b)=> {
+      const scoreA = (parseFloat(a.rating||'0') * 10) + ((genreCountMap.get(a.genre) || 0) * 100);
+      const scoreB = (parseFloat(b.rating||'0') * 10) + ((genreCountMap.get(b.genre) || 0) * 100);
+      return scoreB - scoreA;
+    });
+    
+    // Fill remaining slots with top-scored movies
+    for(const m of allMovies){
+      if(results.length >= 5) break;
+      results.push(m);
+      picked.add(m.title);
+    }
+  }
+
+  return results;
+}
+
+function renderRecommendations(){
+  if(!recommendedSection || !recommendedGrid) return;
+  const recs = buildRecommendations();
+  if(!recs.length){ recommendedSection.style.display = 'none'; recommendedGrid.innerHTML=''; return; }
+  recommendedGrid.innerHTML = '';
+  recs.forEach(m=> recommendedGrid.appendChild(createMovieCard(m)));
+  recommendedSection.style.display = 'block';
+}
 
 /* ---------- Theatres ---------- */
 function openTheatres(movie){ selectedMovie=movie; if(selectedMovieTitleEl) selectedMovieTitleEl.textContent = movie.title; theatresList.innerHTML='';
@@ -313,6 +455,8 @@ function availableSeatsList(){ const list=[]; if(currentSeatMap && currentSeatMa
 
 function setSeatError(msg){ try{ const el = document.getElementById('seatError'); if(!el) return; el.textContent = msg || ''; }catch(e){} }
 
+function showSeatNotification(msg){ const popup = document.createElement('div'); popup.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#FFD700;color:black;padding:20px 30px;border-radius:8px;font-size:16px;font-weight:bold;z-index:10000;box-shadow:0 4px 15px rgba(0,0,0,0.3);text-align:center;min-width:280px;'; popup.textContent = msg; document.body.appendChild(popup); setTimeout(()=>{ popup.style.opacity='0'; popup.style.transition='opacity 0.3s'; setTimeout(()=>popup.remove(),300); }, 2000); }
+
 function autoSelectBestSeats(targetCount){ const needed = targetCount - selectedSeats.length; if(needed<=0) return; const avail = availableSeatsList(); if(!avail.length) return; // pick from priority if available
   const picks = [];
   // prefer priority seats from currentPQ if present
@@ -342,7 +486,7 @@ function currentTheatreCols(){ return selectedTheatre? selectedTheatre.cols:0 }
 
 function handleSeatClick(r,c){
   try{ if(currentSeatMap[r][c]===1) return; const already = selectedSeats.find(s=>s.r==r&&s.c==c); if(already){ selectedSeats = selectedSeats.filter(s=>!(s.r==r&&s.c==c)); setSeatError(''); renderSeats(); return } // trying to select
-    if(selectedSeats.length >= desiredSeatCount){ setSeatError(`You can select up to ${desiredSeatCount} seat(s).`); return }
+    if(selectedSeats.length >= desiredSeatCount){ showSeatNotification(`You can select up to ${desiredSeatCount} seat(s).`); return }
     selectedSeats.push({r,c}); setSeatError(''); renderSeats();
   }catch(e){}
 }
@@ -351,7 +495,7 @@ function handleSeatClickSection(sIndex,r,c){
   try{
     const map = currentSeatMap && currentSeatMap.sections? currentSeatMap.sections[sIndex]:null; if(!map) return; if(map[r][c]===1) return; const already = selectedSeats.find(s=>s.r==r&&s.c==c&&s.s==sIndex);
     if(already){ selectedSeats = selectedSeats.filter(s=> !(s.s==sIndex&&s.r==r&&s.c==c) ); setSeatError(''); renderSeats(); return }
-    if(selectedSeats.length >= desiredSeatCount){ setSeatError(`You can select up to ${desiredSeatCount} seat(s).`); return }
+    if(selectedSeats.length >= desiredSeatCount){ showSeatNotification(`You can select up to ${desiredSeatCount} seat(s).`); return }
     selectedSeats.push({s:sIndex,r,c}); setSeatError(''); renderSeats();
   }catch(e){}
 }
@@ -366,7 +510,7 @@ function confirmBooking(){ if(selectedSeats.length===0){ alert('Select at least 
   }
   const token = 'CBK' + Math.floor(100000 + Math.random()*900000);
   bookings[token] = { token, movie:selectedMovie.title, theatre:selectedTheatre.name, time:selectedTime, date:selectedDate||'', seats:selectedSeats.slice(), timestamp: new Date().toISOString() };
-  seatMaps[currentKey]=currentSeatMap; saveState(); selectedSeats=[]; renderSeats(); // show popup
+  seatMaps[currentKey]=currentSeatMap; saveState(); selectedSeats=[]; renderSeats(); renderRecommendations(); // show popup
   showBookingPopup(bookings[token], 'success'); }
 
 function showBookingPopup(b, mode=false){
@@ -488,7 +632,7 @@ function cancelBooking(token){ const b = bookings[token]; if(!b) { alert('Bookin
       }
     }catch(e){}
   }
-  cancellations.push(Object.assign({}, b, { cancelledAt: new Date().toISOString() })); delete bookings[token]; saveState(); renderBookingHistory();
+  cancellations.push(Object.assign({}, b, { cancelledAt: new Date().toISOString() })); delete bookings[token]; saveState(); renderBookingHistory(); renderRecommendations();
   try{ // hide status overlay and show compact cancel popup
     try{ if(typeof statusSection !== 'undefined' && statusSection){ statusSection.style.display='none'; statusSection.classList.remove('status-modal-open'); } }catch(e){}
     showBookingPopup(b, 'cancel');
@@ -560,12 +704,25 @@ function init(){ loadMoviesIntoBST(); renderMovies(bst.inorder()); confirmBookin
     statusSection.classList.add('status-modal-open'); statusSection.style.display = 'block'; };
   document.getElementById('backToHome1').onclick = ()=>showSection(homeSection); document.getElementById('backToHome2').onclick = ()=>showSection(homeSection); document.getElementById('backToTheatres').onclick = ()=>showSection(theatreSection);
   document.getElementById('closeStatus').onclick = ()=>{ statusSection.style.display='none'; statusSection.classList.remove('status-modal-open'); showSection(homeSection); };
+  if(resetDataBtn){
+    resetDataBtn.onclick = ()=>{
+      if(!confirm('Clear all bookings and cancellations?')) return;
+      localStorage.removeItem(BOOKINGS_KEY);
+      localStorage.removeItem(SEATS_KEY);
+      localStorage.removeItem(CANCELED_KEY);
+      localStorage.removeItem(PRICES_KEY);
+      location.reload();
+    };
+  }
   // allow Enter in token input
   tokenInput.addEventListener('keyup', (e)=>{ if(e.key==='Enter') viewBookingBtn.click() });
   // back from time slots to theatre list
   const backToMovie = document.getElementById('backToMovie'); if(backToMovie) backToMovie.onclick = ()=>showSection(theatreSection);
-  // Reset stored bookings and seat maps to start fresh (per user request) and seed a couple of demo booked seats
-  resetAndSeedDemo();
+  // Seed demo data only if there is no stored booking history
+  if(Object.keys(bookings||{}).length===0 && Object.keys(seatMaps||{}).length===0 && (cancellations||[]).length===0){
+    resetAndSeedDemo();
+  }
+  renderRecommendations();
   // seat count controls
   try{
     const dec = document.getElementById('decreaseSeats');
