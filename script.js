@@ -9,6 +9,19 @@ class MovieBST {
   searchMatches(q){ const matches=[]; const ql=q.toLowerCase(); (function trav(n){ if(!n) return; trav(n.left); if(n.key.includes(ql)) matches.push(n.movie); trav(n.right) })(this.root); return matches }
 }
 
+/* ===== Login Data Structures ===== */
+
+// Hash Map for users
+let users = JSON.parse(localStorage.getItem("users")) || {
+  "harshini": "1234",
+  "roopa": "1234"
+};
+
+
+// Stack for login sessions
+const loginStack = [];
+
+
 class MaxHeapPQ {
   constructor(){ this.heap=[] }
   size(){ return this.heap.length }
@@ -124,18 +137,6 @@ function resetAndSeedDemo(){
   saveState();
 }
 
-/* ===== Login Data Structures ===== */
-
-// Hash Map for users
-let users = JSON.parse(localStorage.getItem("users")) || {
-  "harshini": "1234",
-  "roopa": "1234"
-};
-
-
-// Stack for login sessions
-const loginStack = [];
-
 /* ---------- UI refs ---------- */
 const moviesGrid = document.getElementById('moviesGrid');
 const searchInput = document.getElementById('searchInput');
@@ -170,9 +171,6 @@ const loggedInUser = document.getElementById('loggedInUser');
 const headerBar = document.getElementById('headerBar');
 const goToRegisterBtn = document.getElementById('goToRegisterBtn');
 const goToLoginBtn = document.getElementById('goToLoginBtn');
-const resetDataBtn = document.getElementById('resetDataBtn');
-const recommendedSection = document.getElementById('recommendedSection');
-const recommendedGrid = document.getElementById('recommendedGrid');
 
 function showLogin() {
   loginSection.style.display = 'flex';
@@ -212,8 +210,6 @@ function showRegister() {
   document.getElementById('registerConfirmPassword').value = '';
   registerError.textContent = '';
 }
-
-
 
 // Login
 loginBtn.onclick = () => {
@@ -287,12 +283,15 @@ registerSubmitBtn.onclick = () => {
   }, 2000);
 };
 
-
 // Logout
 logoutBtn.onclick = () => {
   loginStack.pop();        // STACK POP
   showLogin();
 };
+
+const resetDataBtn = document.getElementById('resetDataBtn');
+const recommendedSection = document.getElementById('recommendedSection');
+const recommendedGrid = document.getElementById('recommendedGrid');
 
 /* ---------- App state ---------- */
 let bst = new MovieBST();
