@@ -124,6 +124,18 @@ function resetAndSeedDemo(){
   saveState();
 }
 
+/* ===== Login Data Structures ===== */
+
+// Hash Map for users
+let users = JSON.parse(localStorage.getItem("users")) || {
+  "harshini": "1234",
+  "roopa": "1234"
+};
+
+
+// Stack for login sessions
+const loginStack = [];
+
 /* ---------- UI refs ---------- */
 const moviesGrid = document.getElementById('moviesGrid');
 const searchInput = document.getElementById('searchInput');
@@ -147,9 +159,140 @@ const viewBookingBtn = document.getElementById('viewBooking');
 const tabActive = document.getElementById('tabActive');
 const tabCancellations = document.getElementById('tabCancellations');
 const bookingPopup = document.getElementById('bookingPopup');
+const loginSection = document.getElementById('loginSection');
+const registerSection = document.getElementById('registerSection');
+const logoutBtn = document.getElementById('logoutBtn');
+const loginBtn = document.getElementById('loginBtn');
+const registerSubmitBtn = document.getElementById('registerSubmitBtn');
+const loginError = document.getElementById('loginError');
+const registerError = document.getElementById('registerError');
+const loggedInUser = document.getElementById('loggedInUser');
+const headerBar = document.getElementById('headerBar');
+const goToRegisterBtn = document.getElementById('goToRegisterBtn');
+const goToLoginBtn = document.getElementById('goToLoginBtn');
 const resetDataBtn = document.getElementById('resetDataBtn');
 const recommendedSection = document.getElementById('recommendedSection');
 const recommendedGrid = document.getElementById('recommendedGrid');
+
+function showLogin() {
+  loginSection.style.display = 'flex';
+  registerSection.style.display = 'none';
+  homeSection.style.display = 'none';
+  headerBar.style.display = 'none';
+  logoutBtn.style.display = 'none';
+  
+  // Clear inputs
+  document.getElementById('loginUsername').value = '';
+  document.getElementById('loginPassword').value = '';
+  loginError.textContent = '';
+  loggedInUser.textContent = '';
+  loggedInUser.style.display = 'none';
+}
+
+function showHome() {
+  loginSection.style.display = 'none';
+  registerSection.style.display = 'none';
+  homeSection.style.display = 'block';
+  headerBar.style.display = 'flex';
+  logoutBtn.style.display = 'inline-block';
+  loggedInUser.textContent = '';
+  loggedInUser.style.display = 'none';
+}
+
+function showRegister() {
+  loginSection.style.display = 'none';
+  registerSection.style.display = 'flex';
+  homeSection.style.display = 'none';
+  headerBar.style.display = 'none';
+  logoutBtn.style.display = 'none';
+  
+  // Clear inputs
+  document.getElementById('registerUsername').value = '';
+  document.getElementById('registerPassword').value = '';
+  document.getElementById('registerConfirmPassword').value = '';
+  registerError.textContent = '';
+}
+
+
+
+// Login
+loginBtn.onclick = () => {
+  const u = document.getElementById('loginUsername').value.trim();
+  const p = document.getElementById('loginPassword').value.trim();
+
+  if (users[u] && users[u] === p) {
+    loginStack.push(u);     // STACK PUSH
+    loginError.textContent = '';
+    showHome();
+    showLoginSuccessPopup(u);
+  } else {
+    loginError.textContent = 'Invalid username or password';
+  }
+};
+
+function showLoginSuccessPopup(username) {
+  const message = document.createElement('div');
+  message.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#0052cc,#0040a0);color:#fff;padding:12px 28px;text-align:center;font-size:14px;font-weight:600;z-index:5000;box-shadow:0 4px 12px rgba(0,0,0,0.3);border-radius:6px;';
+  message.textContent = '✓ Login Successful!';
+  document.body.appendChild(message);
+  
+  setTimeout(() => {
+    message.remove();
+  }, 2500);
+}
+
+// Register navigation
+goToRegisterBtn.onclick = () => {
+  showRegister();
+};
+
+goToLoginBtn.onclick = () => {
+  showLogin();
+};
+
+// Register submission
+registerSubmitBtn.onclick = () => {
+  const u = document.getElementById('registerUsername').value.trim();
+  const p = document.getElementById('registerPassword').value.trim();
+  const p2 = document.getElementById('registerConfirmPassword').value.trim();
+
+  if (!u || !p || !p2) {
+    registerError.textContent = "All fields are required";
+    return;
+  }
+
+  if (p !== p2) {
+    registerError.textContent = "Passwords do not match";
+    return;
+  }
+
+  if (u.length < 3) {
+    registerError.textContent = "Username must be at least 3 characters";
+    return;
+  }
+
+  if (users[u]) {
+    registerError.textContent = "Username already exists";
+    return;
+  }
+
+  users[u] = p; // HASH MAP INSERT
+  localStorage.setItem("users", JSON.stringify(users));
+  
+  registerError.style.color = '#4ade80';
+  registerError.textContent = "Account created successfully! Redirecting to login...";
+  setTimeout(() => {
+    registerError.style.color = '#ff6b6b';
+    showLogin();
+  }, 2000);
+};
+
+
+// Logout
+logoutBtn.onclick = () => {
+  loginStack.pop();        // STACK POP
+  showLogin();
+};
 
 /* ---------- App state ---------- */
 let bst = new MovieBST();
@@ -747,7 +890,8 @@ function init(){ loadMoviesIntoBST(); renderMovies(bst.inorder()); confirmBookin
     };
   }catch(e){}
   // no tab switching — both Active bookings and Cancellations are shown sequentially
-  showSection(homeSection);
+  showLogin();
+
 }
 
 init(); 

@@ -1,6 +1,6 @@
 # CineBook 🎬
 
-A movie ticket booking system built with vanilla JavaScript, HTML, and CSS. Browse movies, select seats, and manage bookings with local storage persistence.
+A movie ticket booking system built with vanilla JavaScript, HTML, and CSS. Browse movies, select seats, get movie recommendations, and manage bookings with local storage persistence.
 
 ## Features
 
@@ -9,6 +9,7 @@ A movie ticket booking system built with vanilla JavaScript, HTML, and CSS. Brow
 - Select theaters and show timings
 - Interactive seat selection with visual availability
 - Smart "Best Seats" recommendations
+- Personalized movie recommendations 
 - View and cancel bookings with unique tokens
 
 ## Technologies

@@ -8,18 +8,59 @@
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <header>
+    <header id="headerBar" style="display:none">
         <h1>CineBook</h1>
         <div class="header-controls">
             <input id="searchInput" placeholder="Search movies by title..." />
             <button id="searchBtn">Search</button>
             <button id="resetDataBtn" title="Clear bookings & refresh">Reset</button>
             <button id="bookingStatusBtn" title="Booking Status">🔖</button>
+            <span id="loggedInUser" style="display:none; margin-right:12px; color:#9fb0c9;"></span>
+            <button id="logoutBtn" style="display:none">Logout</button>
         </div>
     </header>
 
     <main>
         <div class="container">
+        <!-- Login Section -->
+        <section id="loginSection" class="auth-section">
+            <div class="auth-container">
+                <div class="auth-image-left">
+                    <img src="image.jpg" alt="Movie Ticket Booking" class="login-image" />
+                </div>
+                
+                <div class="auth-card">
+                    <h1 class="auth-title">CineBook</h1>
+                    <p class="auth-subtitle">Login to continue booking movies</p>
+
+                    <input id="loginUsername" type="text" placeholder="Username" class="auth-input" />
+                    <input id="loginPassword" type="password" placeholder="Password" class="auth-input" />
+
+                    <button id="loginBtn" class="auth-btn">Login</button>
+                    <p id="loginError" class="auth-error"></p>
+                    
+                    <p class="auth-link-text">Don't have an account? <span id="goToRegisterBtn" style="color:#ff7a33;cursor:pointer;font-weight:700;">Register here</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Register Section -->
+        <section id="registerSection" class="auth-section" style="display:none">
+            <div class="auth-card">
+                <h1 class="auth-title">Create Account</h1>
+                <p class="auth-subtitle">Sign up to start booking movies</p>
+
+                <input id="registerUsername" type="text" placeholder="Username" class="auth-input" />
+                <input id="registerPassword" type="password" placeholder="Password" class="auth-input" />
+                <input id="registerConfirmPassword" type="password" placeholder="Confirm Password" class="auth-input" />
+
+                <button id="registerSubmitBtn" class="auth-btn">Create Account</button>
+                <p id="registerError" class="auth-error"></p>
+                
+                <p class="auth-link-text">Already have an account? <span id="goToLoginBtn" style="color:#ff7a33;cursor:pointer;font-weight:700;">Login here</span></p>
+            </div>
+        </section>
+
         <!-- Home / Movies Listing -->
         <section id="homeSection">
             <h2>Now Showing</h2>
