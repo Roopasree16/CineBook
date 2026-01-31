@@ -9,6 +9,19 @@ class MovieBST {
   searchMatches(q){ const matches=[]; const ql=q.toLowerCase(); (function trav(n){ if(!n) return; trav(n.left); if(n.key.includes(ql)) matches.push(n.movie); trav(n.right) })(this.root); return matches }
 }
 
+/* ===== Login Data Structures ===== */
+
+// Hash Map for users
+let users = JSON.parse(localStorage.getItem("users")) || {
+  "harshini": "1234",
+  "roopa": "1234"
+};
+
+
+// Stack for login sessions
+const loginStack = [];
+
+
 class MaxHeapPQ {
   constructor(){ this.heap=[] }
   size(){ return this.heap.length }
@@ -147,6 +160,80 @@ const viewBookingBtn = document.getElementById('viewBooking');
 const tabActive = document.getElementById('tabActive');
 const tabCancellations = document.getElementById('tabCancellations');
 const bookingPopup = document.getElementById('bookingPopup');
+const loginSection = document.getElementById('loginSection');
+const logoutBtn = document.getElementById('logoutBtn');
+const loginBtn = document.getElementById('loginBtn');
+const registerBtn = document.getElementById('registerBtn');
+const loginError = document.getElementById('loginError');
+const loggedInUser = document.getElementById('loggedInUser');
+
+function showLogin() {
+  loginSection.style.display = 'flex';
+  homeSection.style.display = 'none';
+  logoutBtn.style.display = 'none';
+
+  registerBtn.style.display = 'inline-block'; // 👈 SHOW Register
+
+  loggedInUser.textContent = '';
+  loggedInUser.style.display = 'none';
+}
+
+
+function showHome() {
+  loginSection.style.display = 'none';
+  homeSection.style.display = 'block';
+  logoutBtn.style.display = 'inline-block';
+
+  registerBtn.style.display = 'none'; // 👈 HIDE Register
+
+  const currentUser = loginStack[loginStack.length - 1];
+  loggedInUser.textContent = `Logged in as ${currentUser}`;
+  loggedInUser.style.display = 'inline-block';
+}
+
+
+
+// Login
+loginBtn.onclick = () => {
+  const u = loginUsername.value.trim();
+  const p = loginPassword.value.trim();
+
+  if (users[u] && users[u] === p) {
+    loginStack.push(u);     // STACK PUSH
+    loginError.textContent = '';
+    showHome();
+  } else {
+    loginError.textContent = 'Invalid username or password';
+  }
+};
+
+// Register
+registerBtn.onclick = () => {
+  const u = loginUsername.value.trim();
+  const p = loginPassword.value.trim();
+
+  if (!u || !p) {
+    loginError.textContent = "Enter username and password";
+    return;
+  }
+
+  if (users[u]) {
+    loginError.textContent = "User already exists";
+    return;
+  }
+
+  users[u] = p; // HASH MAP INSERT
+  localStorage.setItem("users", JSON.stringify(users));
+
+  loginError.textContent = "Registration successful. Please login.";
+};
+
+
+// Logout
+logoutBtn.onclick = () => {
+  loginStack.pop();        // STACK POP
+  showLogin();
+};
 const resetDataBtn = document.getElementById('resetDataBtn');
 const recommendedSection = document.getElementById('recommendedSection');
 const recommendedGrid = document.getElementById('recommendedGrid');
@@ -747,7 +834,8 @@ function init(){ loadMoviesIntoBST(); renderMovies(bst.inorder()); confirmBookin
     };
   }catch(e){}
   // no tab switching — both Active bookings and Cancellations are shown sequentially
-  showSection(homeSection);
+  showLogin();
+
 }
 
 init(); 
