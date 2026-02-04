@@ -218,6 +218,8 @@ loginBtn.onclick = () => {
 
   if (users[u] && users[u] === p) {
     loginStack.push(u);     // STACK PUSH
+    console.log("Registered Users (HashMap):", users);
+    console.log("Login Stack after LOGIN:", loginStack);
     loginError.textContent = '';
     showHome();
     showLoginSuccessPopup(u);
@@ -274,6 +276,7 @@ registerSubmitBtn.onclick = () => {
 
   users[u] = p; // HASH MAP INSERT
   localStorage.setItem("users", JSON.stringify(users));
+  console.log("New User Registered! Updated Users (HashMap):", users);
   
   registerError.style.color = '#4ade80';
   registerError.textContent = "Account created successfully! Redirecting to login...";
@@ -286,6 +289,8 @@ registerSubmitBtn.onclick = () => {
 // Logout
 logoutBtn.onclick = () => {
   loginStack.pop();        // STACK POP
+  console.log("Registered Users (HashMap):", users);
+  console.log("Login Stack after LOGOUT:", loginStack);
   showLogin();
 };
 
@@ -349,7 +354,8 @@ searchBtn.onclick = ()=>{ const q=searchInput.value.trim(); if(!q) renderMovies(
 
 /* ---------- Recommendations (Hash Map + Max Heap) ---------- */
 function getRecentBookings(limit=5){
-  const list = Object.values(bookings || {});
+  const currentUser = loginStack[loginStack.length - 1] || 'guest';
+  const list = Object.values(bookings || {}).filter(b => b.username === currentUser);
   return list
     .slice()
     .sort((a,b)=> new Date(b.timestamp||0) - new Date(a.timestamp||0))
@@ -651,7 +657,9 @@ function confirmBooking(){ if(selectedSeats.length===0){ alert('Select at least 
     else if(currentSeatMap && Array.isArray(currentSeatMap)) { currentSeatMap[s.r][s.c]=1; if(currentPQ) currentPQ.remove(x=>x.row===s.r && x.col===s.c) }
   }
   const token = 'CBK' + Math.floor(100000 + Math.random()*900000);
-  bookings[token] = { token, movie:selectedMovie.title, theatre:selectedTheatre.name, time:selectedTime, date:selectedDate||'', seats:selectedSeats.slice(), timestamp: new Date().toISOString() };
+  const currentUser = loginStack[loginStack.length - 1] || 'guest';
+  bookings[token] = { token, username: currentUser, movie:selectedMovie.title, theatre:selectedTheatre.name, time:selectedTime, date:selectedDate||'', seats:selectedSeats.slice(), timestamp: new Date().toISOString() };
+  console.log("Booking created for user:", currentUser, "Booking:", bookings[token]);
   seatMaps[currentKey]=currentSeatMap; saveState(); selectedSeats=[]; renderSeats(); renderRecommendations(); // show popup
   showBookingPopup(bookings[token], 'success'); }
 
@@ -700,7 +708,9 @@ function showBookingPopup(b, mode=false){
 function renderBookingHistory(){ // build Active and Cancellations panes in the status view
   let htmlActive = '<h3 class="active-heading">Active Bookings</h3>';
   let htmlCancel = '<h3 class="cancel-heading">Cancellations</h3>';
-  const active = Object.values(bookings);
+  const currentUser = loginStack[loginStack.length - 1] || 'guest';
+  const active = Object.values(bookings).filter(b => b.username === currentUser);
+  const userCancellations = cancellations.filter(c => c.username === currentUser);
   if(active.length){ htmlActive += '<div class="booking-list">';
     for(const b of active){
       const mv = movies.find(x=>x.title===b.movie) || {poster:''};
@@ -725,8 +735,8 @@ function renderBookingHistory(){ // build Active and Cancellations panes in the 
     htmlActive += '<p class="empty-msg">No active bookings found</p>';
   }
 
-  if(cancellations.length){ htmlCancel += '<div class="booking-list">';
-    for(const c of cancellations.slice().reverse()){
+  if(userCancellations.length){ htmlCancel += '<div class="booking-list">';
+    for(const c of userCancellations.slice().reverse()){
       const mv = movies.find(x=>x.title===c.movie) || {poster:c.poster||''};
       const seatsStr = (c.seats||[]).map(s=> seatLabelForBooking(c,s)).join(', ');
       const cancelledAt = c.cancelledAt ? new Date(c.cancelledAt).toLocaleString() : '';
@@ -774,7 +784,8 @@ function cancelBooking(token){ const b = bookings[token]; if(!b) { alert('Bookin
       }
     }catch(e){}
   }
-  cancellations.push(Object.assign({}, b, { cancelledAt: new Date().toISOString() })); delete bookings[token]; saveState(); renderBookingHistory(); renderRecommendations();
+  cancellations.push(Object.assign({}, b, { username: b.username || 'guest', cancelledAt: new Date().toISOString() })); delete bookings[token]; saveState(); renderBookingHistory(); renderRecommendations();
+  console.log("Booking cancelled for user:", b.username || 'guest');
   try{ // hide status overlay and show compact cancel popup
     try{ if(typeof statusSection !== 'undefined' && statusSection){ statusSection.style.display='none'; statusSection.classList.remove('status-modal-open'); } }catch(e){}
     showBookingPopup(b, 'cancel');
